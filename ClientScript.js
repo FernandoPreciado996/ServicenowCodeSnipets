@@ -14,11 +14,11 @@
 	}
 
 //script include
-	hcResult: function(){
+	hcResult: function (){
 
 	var lice=     this.getParameter('sysparm_comp');
 	var por = this.getParameter('sysparm_sn');
 	lice = lice.match(/\d+/);
 	return lice;
-
+f
 	}
