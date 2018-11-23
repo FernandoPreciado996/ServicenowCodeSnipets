@@ -13,12 +13,14 @@
    alert(answer);
 	}
 
-//script include
-	hcResult: function (){
+//script include made it to json to adoid ESlint this joson will contain other dependencies.
+var scriptInclude ={
+   hcResult: function (){
+      var lice=     this.getParameter('sysparm_comp');
+      var por = this.getParameter('sysparm_sn');
+      lice = lice.match(/\d+/);
+      return lice;
+   
+      }
+}
 
-	var lice=     this.getParameter('sysparm_comp');
-	var por = this.getParameter('sysparm_sn');
-	lice = lice.match(/\d+/);
-	return lice;
-f
-	}
