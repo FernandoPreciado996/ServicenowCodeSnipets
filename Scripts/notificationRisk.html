@@ -1,0 +1,382 @@
+<div class="panel panel-{{options.color}} margin-top">
+
+  <ul class="nav nav-tabs" ng-if="data.aditionalTables">
+    <li ng-repeat="req in data.aditionalTables" 
+        ng-class="req.label==data.title || req.table==data.table ? 'active' : ''"
+        ng-click="c.requestRedirect(req.table, req.filter, req.fields, req.label)">
+      <a data-toggle="tab" href="#menu1">{{req.label}}</a>
+    </li>
+  </ul>
+
+  <div class="panel-heading form-inline title-table" ng-hide="options.hide_header">
+    <span class="dropdown m-r-xs" ng-if="data.showMenu==true">
+      <button aria-label="${Table menu}" class="btn dropdown-toggle glyphicon glyphicon-menu-hamburger" style="line-height: 1.4em" id="optionsMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+      <ul class="dropdown-menu" aria-labelledby="optionsMenu">
+        <li ng-repeat="t in ::exportTypes">
+          <a ng-href="/{{data.table}}_list.do?{{::t.value}}&sysparm_query={{data.filter}}&sysparm_view={{data.view}}&sysparm_fields={{data.fields}}" target="_new">${Export as} {{::t.label}}</a>
+        </li>
+      </ul>
+    </span>
+    <span class="panel-title">
+      <i ng-if="options.glyph" class="fa fa-{{options.glyph}} m-r"></i>
+      {{data.title || data.table_plural}}
+      <div class="header-loader" ng-show="c.activeLoading">
+        <div class="sp-loading-indicator la-sm">
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+      </div>
+    </span>
+    <div class="pull-right desktop" ng-if="options.show_keywords">
+      <div ng-hide="viewAll==true" style="float:left;padding-top:7px;cursor:pointer;">
+        <a href="javascript:void(0)" ng-click="goAll()">${View all}</a>
+      </div>
+      <form ng-submit="setSearch(true)" style="float:right;">
+        <div class="input-group">
+          <input type="text" name="datatable-search" ng-model="data.keywords" 
+                 ng-keyDown="$event.keyCode == 13 ? showBack() : null"
+                 class="form-control" placeholder="${Keyword Search}">
+          <span class="input-group-btn">
+            <button name="search" class="btn btn-default" type="submit" ng-click="showBack()" aria-label="${Search}"><span class="glyphicon glyphicon-search"></span></button>
+          </span>
+        </div>
+      </form>
+    </div>
+    <div class="mobile" ng-if="options.show_keywords">
+      <div ng-hide="viewAll==true" style="float:left;padding-top:7px;cursor:pointer;">
+        <a href="javascript:void(0)" ng-click="goAll()">${View all}</a>
+      </div>
+      <div id="general-search">
+        <div style="width: 38%;">
+          <select class="form-control" ng-model="fieldValue" ng-change="c.reset()">
+            <option value="" disabled hidden selected>${General search}</option>
+            <option value="{{field}}" 
+                    ng-repeat="field in data.fields_array track by $index">
+              {{data.column_labels[field]}}
+            </option>
+          </select>
+        </div>
+        <div style="width: 62%;">
+          <div class="input-group">
+            <input id="searchFilter" type="text" ng-model="search" class="form-control" 
+                   ng-keyDown="$event.keyCode == 13 ? filterBy(fieldValue, search) : null" 
+                   value="{{search}}">
+            <span class="input-group-btn">
+              <button name="search" class="btn btn-default" 
+                      ng-click="filterBy(fieldValue, search)">
+                <span class="glyphicon glyphicon-search"></span>
+              </button>
+            </span>
+          </div>
+        </div>
+      </div>  
+      <div id="sort-by">
+        <label>${Sort by}</label>
+        <i class="fa" ng-if="fieldToSort == data.o" 
+           style="margin-left:-5px;color:#A0A0A0;padding-right:6px;margin-top:-5px;"
+           ng-click="setOrderBy(fieldToSort)"
+           ng-class="{'asc': 'fa-chevron-up', 'desc': 'fa-chevron-down'}[data.d]">
+        </i>
+        <select class="form-control" ng-model="fieldToSort" ng-change="setOrderBy(fieldToSort)">
+          <option value="" disabled hidden selected>${Select a field}</option>
+          <option value="{{field}}" 
+                  ng-repeat="field in data.fields_array track by $index">
+            {{data.column_labels[field]}}
+          </option>
+        </select>
+      </div>   
+
+    </div>
+
+    <div class="clearfix"></div>
+  </div>
+  <!-- body -->
+  <div class="panel-body">
+    <h2 class="sr-only data-table-title">{{data.title || data.table_plural}} ${table} - ${page} {{data.p}}</h2>
+    <div class="alert alert-info" ng-if="!data.listMirror.length && !data.num_pages && !data.invalid_table && !loadingData">
+      ${No records in {{data.table_label}} <span ng-if="data.filter">using that filter</span>}
+    </div>
+    <div class="alert alert-info" ng-if="loadingData">
+      <fa name="spinner" spin="true"></fa> ${Loading data}...
+    </div>
+
+
+    <!-- DESKTOP -->
+    <table class="table table-striped table-responsive desktop" ng-if="data.list.length">
+      <thead>
+        <tr>
+          <!--
+								Hide the search column
+          <th class=""><a ng-click="toggle()"><i class="glyphicon glyphicon-search"></i></a></th>
+					-->
+          <!--Headers-->
+          <th ng-repeat="field in data.fields_array | limitTo :data.maxFields  track by $index" ng-click="setOrderBy(field)" tabindex="0">
+            <div class="th-title" aria-label="${Sort by } {{data.column_labels[field]}}">{{data.column_labels[field]}}</div>
+            <i class="fa" ng-if="field == data.o" ng-class="{'asc': 'fa-chevron-up', 'desc': 'fa-chevron-down'}[data.d]" aria-label="${Sorted by } {{data.column_labels[field]}} {{data.d == 'asc' ?  '${Ascending}': '${Descending}' }}"></i>
+          </th>
+        </tr>
+        <tr ng-show="show">
+          <th></th>
+          <th ng-repeat="model in data.models">
+            <input class="filterInput" type="text" 
+                   ng-model="model.model"  
+                   ng-keyDown="$event.keyCode == 13 ? filterBy(model.name, model.model) : null">
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="item in data.listMirror.slice(from, to) track by item.sys_id">
+        <!--
+								Hide the search column
+          <td class="" tabindex="0" role="link" ng-click="go(data.table, item)" aria-label="${Open record}"></td>
+					-->
+          <!--Records list-->
+          <td 
+              role="text" aria-label="{{item[field].display_value}}" class="pointer" ng-class="{selected: item.selected}" 
+              ng-click="displayTab(item.sys_id)" ng-repeat="field in data.fields_array | limitTo :data.maxFields" data-field="{{field}}"
+              ng-if="item[field].iconRisk"
+              style="{{item[field].color}}"
+              ng-hide="displayItem[item.sys_id]"
+              data-th="{{data.column_labels[field]}}">
+            <img ng-src="{{item[field].display_value}}" />
+          </td>
+          <td 
+              role="text" aria-label="{{item[field].display_value}}" class="pointer" ng-class="{selected: item.selected}" 
+              ng-click="displayTab(item.sys_id)" ng-repeat="field in data.fields_array | limitTo :data.maxFields" data-field="{{field}}" 
+              ng-if="!item[field].iconRisk"
+              style="{{item[field].color}}"
+              ng-hide="displayItem[item.sys_id]"
+              data-th="{{data.column_labels[field]}}">{{item[field].display_value}}
+          </td>
+          <td
+              style="{{item[field].color}}"
+              class="section-display">
+            <a href="javascript:void(0)" ng-click="displayTab(item.sys_id)"> <i class="section-display fa fa-angle-down"></i> </a>
+          </td>
+          <td ng-if="displayItem[item.sys_id]" class="secondary-element">
+            <div  class="secondary-table">
+              <div class="secondary-header"><!--Secondary headers-->
+                <div class="section-1">
+                  <label>Flight Status</label>
+                </div>
+                <div class="section-2">
+                  <label>General Information</label>
+                </div>
+                <div class="section-3">
+                  <label>Flight Information</label>
+                </div>
+                <div class="section-4">
+                  <span> <img src="departure-plane.png" width="28" height="27"/> </span> <label>Departure</label>
+                </div>
+                <div class="section-5">
+                  <div class="subsection-5-1">
+                    <span><img src="arrival-plane.png" width="28" height="28"/></span> <label>Arrival</label>
+                  </div>
+                  <div class="subsection-5-2">
+                    <a href="javascript:void(0)" ng-click="hideTab(item.sys_id)"> <i class="fa fa-close"></i> </a>
+                  </div>
+                </div>
+              </div>
+              <div class="secondary-content"><!--Secondary content-->
+                <div class="section-1"> <!--Flight status-->
+                    <label class="risk-label">{{item.u_risk.label}}</label>
+                     <img class="risk-icon" ng-src="{{item.u_risk.display_value}}" />
+                    <label class="alert-label">{{item.u_alert_type.label}}</label>
+                    <label style="{{item.u_alert_type.color}}" class="alert-status">{{item.u_alert_type.display_value}}</label>
+                  <div>
+                    
+                  </div>
+                </div>
+                <div class="section-2"> <!--General information-->
+                  <div class="field-row">
+                    <div class="field-label">
+                      <label>{{::data.column_labels.u_requestor_trip}}</label>
+                    </div>
+                    <div class="field-value">
+                    <label>{{item.u_requestor_trip.display_value}}</label>
+                    </div>
+                  </div>
+                  <div class="field-row">
+                    <div class="field-label">
+                      <label>{{::data.column_labels.u_flight_number}}</label>
+                    </div>
+                    <div class="field-value">
+                      <label>{{item.u_flight_number.display_value}}</label>
+                    </div>
+                  </div>
+                  <div class="field-row">
+                    <div class="field-label">
+                      <label>{{::data.column_labels.u_alert_value}}</label>
+                    </div>
+                    <div class="field-value-long">
+                    <label>{{item.u_alert_value.display_value}}</label>
+                    </div>
+                  </div>
+                </div>
+                <div class="section-3"> <!--Flight Information-->
+                  <div class="field-row field-label" ng-if="data.showGSOC">
+                    <label>GSOC Time</label>
+                  </div>
+                  <div class="field-row field-label">
+                    <label>Local Time date</label>
+                  </div>
+                  <div class="field-row field-label">
+                    <label>Station</label>
+                  </div>
+                  <div class="field-row field-label">
+                    <label>City</label>
+                  </div>
+                  <div class="large-field-row field-label">
+                    <label>Called User</label>
+                  </div>
+                  <div class="field-row field-label">
+                    <label>GMT Time date</label>
+                  </div>                  
+                </div>
+                <div class="section-4"> <!--Flight Departure-->
+                  <div class="field-row field-value" ng-if="data.showGSOC">
+                    <label>{{item.u_start_stay_date.display_value}}</label>
+                  </div>
+                  <div class="field-row field-value">
+                    <label>{{item.u_local_departure_date.display_value}}</label>
+                  </div>
+                  <div class="field-row field-value">
+                    <label>{{item.u_departing_station.display_value}}</label>
+                  </div>
+                  <div class="field-row field-value">
+                    <label>{{item.u_inbound_flight_rail_departure_city_state.display_value}}</label>
+                  </div>
+                  <div class="large-field-row field-value">
+                    <select ng-change="callUser(item)" ng-model="item.u_called_user_departing.value">
+                      <option value="true">True</option>
+                      <option value="false">False</option>
+                    </select>
+                  </div>
+                  <div class="field-row field-value">
+                    <label>{{item.u_global_departure_date.display_value}}</label>
+                  </div>                     
+                </div>
+                <div class="section-5"> <!--Flight Arrival-->
+                  <div class="field-row field-value" ng-if="data.showGSOC">
+                    <label>{{item.u_end_stay_date.display_value}}</label>
+                  </div>
+                  <div class="field-row field-value">
+                    <label>{{item.u_local_arrival_date.display_value}}</label>
+                  </div>
+                  <div class="field-row field-value">
+                    <label>{{item.u_station.display_value}}</label>
+                  </div>
+                  <div class="field-row field-value">
+                    <label>{{item.u_inbound_flight_rail_arrival_city_state.display_value}}</label>
+                  </div>
+                  <div class="large-field-row field-value">
+                    <select ng-change="callUser(item)" ng-model="item.u_called_user_arrival.value">
+                      <option value="true">True</option>
+                      <option value="false">False</option>
+                    </select>
+                </div>
+                  <div class="field-row field-value">
+                    <label>{{item.u_global_arrival_date.display_value}}</label>
+                  </div>                     
+                </div>
+              </div>
+            </div>
+          </td> 
+        </tr>	
+      </tbody>
+    </table>
+
+
+    <table class="table table-striped table-responsive mobile" ng-if="data.list.length">
+      <tbody style="display:table;width:100%;">
+        <!--tr ng-repeat="item in data.list track by item.sys_id"-->
+        <tr ng-repeat="item in data.listMirror.slice(from, to) track by item.sys_id">
+          <td>
+            <div class="sr-only space" tabindex="0" role="link" aria-label="${Open record}">
+              <img ng-if="c.options.show_icon_info=='true'" src="info.svg"/>
+            </div>
+            <div role="text" aria-label="{{item[field].display_value}}" class="pointer space" 
+                 ng-class="{selected: item.selected}" 
+                 ng-repeat="field in data.fields_array" data-field="{{field}}" 
+                 style="{{item[field].color}} display:flex;"
+                 data-th="{{data.column_labels[field]}}">
+              <div style="width:125px;" ng-click="setOrderBy(field)" tabindex="0">
+                <div class="th-title" aria-label="${Sort by } {{data.column_labels[field]}}">{{data.column_labels[field]}}</div>
+              </div>
+              <div style="width:calc(100% - 125px);" ng-click="go(data.table, item)" >
+                {{item[field].display_value}}
+              </div>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div ng-class="{'pruned-msg-filter-pad': (!options.show_breadcrumbs || !data.filter) && !data.list.length}" class="pruned-msg" ng-if="rowsWerePruned()">
+      <span ng-if="rowsPruned == 1">${{{rowsPruned}} row removed by security constraints}</span>
+      <span ng-if="rowsPruned > 1">${{{rowsPruned}} rows removed by security constraints}</span>
+    </div>
+  </div>
+
+
+  <!-- footer -->
+
+  <div class="panel-footer" ng-hide="options.hide_footer" ng-if="data.row_count">
+    <!-- footer -->
+    <div id="content-pagination" ng-if="data.list">
+      <div id="pagination">
+        <div class="group-left">
+          <div class="group" ng-click="setPageNum(1)" ng-disabled="data.p == 1">
+            <div ng-show="data.p > 1">
+              <img src="pagination-left-black.svg" />
+              <img src="pagination-left-black.svg" />
+            </div>
+            <div ng-show="data.p == 1">
+              <img src="pagination-left-gray.svg" />
+              <img src="pagination-left-gray.svg" />
+            </div>
+          </div>
+          <div class="single">
+            <img src="pagination-left-gray.svg" ng-disabled="data.p == 1"
+                 ng-show="data.p == 1"/>
+            <img src="pagination-left-black.svg" ng-disabled="data.p == 1"
+                 ng-click="setPageNum(data.p - 1)"
+                 ng-show="data.p > 1"/>
+          </div>
+        </div>
+        <div class="middle" style="top:5px;position:relative;">
+          <form ng-submit="setPageNum(data.p)">
+            <input id="pageInput" type="text" ng-model="data.p"> 
+            <p id="textPageInput">
+              {{data.of}} {{data.num_pages}} {{data.pages}}
+            </p>
+          </form>
+        </div>
+        <div class="group-right">
+          <div class="single" ng-disabled="data.p == data.num_pages" ng-click="setPageNum(data.p + 1)">
+            <img src="pagination-right-black.svg"
+                 ng-show="data.p < data.num_pages" />
+            <img src="pagination-left-gray.svg" style="transform:rotate(180deg);"  
+                 ng-show="data.p >= data.num_pages" />
+          </div>
+          <div class="btn-group" ng-click="setPageNum(data.num_pages)" ng-disabled="data.p == data.num_pages">
+            <div ng-show="data.p != data.num_pages">
+              <img src="pagination-right-black.svg" />
+              <img src="pagination-right-black.svg" />
+            </div>
+            <div ng-show="data.p == data.num_pages">
+              <img src="pagination-left-gray.svg" style="transform:rotate(180deg);" />
+              <img src="pagination-left-gray.svg" style="transform:rotate(180deg);" />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="amount" ng-if="mathMin(data.window_end,data.row_count) != data.row_count">
+        {{data.window_size}} {{::data.of}} {{data.row_count}} {{::data.records}}
+      </div>
+      <div id="amount" ng-if="mathMin(data.window_end,data.row_count) == data.row_count">
+        {{data.row_count - data.window_start}} {{::data.of}} {{data.row_count}} {{::data.records}}
+      </div>
+    </div>
+  </div>
+</div>
