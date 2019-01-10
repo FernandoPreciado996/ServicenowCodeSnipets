@@ -53,22 +53,17 @@ function getGerentusers(cityCode){ // since the db it not that redundant i need 
         grTravelStations.addQuery('u_country!=NULL');
         grTravelStations.query();
         if(grTravelStations.next()){
-            gs.info('transportation table passed')
             var grCoreContry = new GlideRecord('core_country')
                 grCoreContry.get(grTravelStations.u_country);
                 if(grCoreContry){
-                    gs.info('contry table passed')
                     var grCoreRegion = new GlideRecord('u_core_region');
                         grCoreRegion.addQuery('u_code',grCoreContry.iso3166_2); 
                         grCoreRegion.query();
-                    }
                     if(grCoreRegion.next()){
-                        gs.info('region table passed')
                         var grGroup = new GlideRecord('sys_user_group');
                             grGroup.addQuery('u_regionsLIKE'+grCoreRegion.sys_id);
                             grGroup.query()
                             if(grGroup.next()){
-                                gs.info('group table passed')
                                 var grGroupMember = new GlideRecord('sys_user_grmember');
                                     grGroupMember.addQuery('group',grGroup.sys_id);
                                     grGroupMember.query();
@@ -79,6 +74,5 @@ function getGerentusers(cityCode){ // since the db it not that redundant i need 
                             }
                     }
         }
-        gs.info(auxMembers+"")
         return auxMembers+"";
 }
