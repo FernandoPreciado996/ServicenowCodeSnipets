@@ -12,6 +12,7 @@ while(grTravels.next()){
 
 	var departureManager =_getDepartureManager(grTravels.u_requestor_trip);
 	var arrivalManager = _getArrivalManager(grTravels.sys_id);
+
 	if(departureManager == arrivalManager){
 		_populateJson(departureManager,jsonAvariableGroups)
 	}else{
@@ -19,10 +20,12 @@ while(grTravels.next()){
 		_populateJson(arrivalManager,jsonAvariableGroups)
 	}
 }
-gs.eventQueue('high_risk.travel',grTravels,JSON.stringify(GSOCData),gs.getProperty('cmx.travels.gsoc.group'));
+
+//gs.eventQueue('high_risk.travel',grTravels,JSON.stringify(GSOCData),gs.getProperty('cmx.travels.gsoc.group'));
+
 for (var n in jsonAvariableGroups){
 	if(jsonAvariableGroups[n].flights.length > 0){
-	gs.eventQueue('high_risk.travel',grTravels,JSON.stringify(jsonAvariableGroups[n]),jsonAvariableGroups[n].sys_id);
+	//gs.eventQueue('high_risk.travel',grTravels,JSON.stringify(jsonAvariableGroups[n]),jsonAvariableGroups[n].sys_id);
 	}
 	gs.info(jsonAvariableGroups[n].flights.length)
 
@@ -40,7 +43,7 @@ function _populateJsonFirstTime(){// populate the json with all the regional man
 	while(grRegionalGroups.next()){
 		if(grRegionalGroups){
 			var grRegionalManager = new GlideRecord('sys_user_grmember')
-				grRegionalManager.addQuery('gr1oup='+grRegionalGroups.sys_id);
+				grRegionalManager.addQuery('group='+grRegionalGroups.sys_id);
 				grRegionalManager.query();
 				grRegionalManager.next();
 				//gs.info(grRegionalManager.sys_id)

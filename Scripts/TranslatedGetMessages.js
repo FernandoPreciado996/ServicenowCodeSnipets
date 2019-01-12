@@ -11,4 +11,4 @@
         key = key.replace(new RegExp(str, 'g'),array[i]);
     }
     return key;
-},
+}
