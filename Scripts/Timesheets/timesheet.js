@@ -167,6 +167,163 @@ timesheet.wenesday =[
     }
 ]
 
+timesheet.thurday =[
+            {
+                descrption:'Meetings-Scrum,Grooming',
+                time:1.5,
+                realtime:1.5,
+                project:'4thsource'
+            },
+            {
+                descrption:'STRY0024228 ',
+                time:1,
+                realtime:.5,
+                project:'Infor',
+                definition:'Update the changes to prod saas'
+            },
+            {
+                descrption:'Admin',
+                time:1,
+                realtime:1,
+                project:'4thsource',
+                definition:''
+            },
+            {
+                descrption:'Story to Story',
+                time:2.5,
+                realtime:2,
+                project:'4thsource',
+                definition:'Implement the comment when retriving all the stories,Get the origin sys_id when retriving attachments'
+            },
+            {
+                descrption:'STRY0013576',
+                time:2,
+                realtime:1,
+                project:'4thsource',
+                definition:'Agile Worfklow with project owner approval'
+            },
+            {
+                descrption:'4thsource Internal',
+                time:.5,
+                realtime:.5,
+                project:'4thsource'
+            },
+            {
+                descrption:'Scrum',
+                time:.5,
+                realtime:.5,
+                project:'Handcloud'
+            },
+            {
+                descrption:'STRY0017882',
+                time:.5,
+                realtime:.5,
+                project:'Handcloud'
+            },
+            {
+                descrption:'STRY0017881',
+                time:.5,
+                realtime:.5,
+                project:'Handcloud'
+            },
+            {
+                descrption:'STRY0016439',
+                time:.5,
+                realtime:.5,
+                project:'Handcloud'
+            },
+            {
+                descrption:'STRY0016434',
+                time:.5,
+                realtime:.5,
+                project:'Handcloud'
+            },
+            {
+                descrption:'STRY0016433',
+                time:.5,
+                realtime:.5,
+                project:'Handcloud'
+            },
+            {
+                descrption:'1:1 Eduardo',
+                time:.5,
+                realtime:.5,
+                project:'Handcloud'
+            },
+            {
+                descrption:'e-global meeting',
+                time:1,
+                realtime:1,
+                project:'Handcloud'
+            },
+]
+
+timesheet.friday =[
+    {
+        descrption:'Meetings-Scrum,1:1 Azanias,infor,John MIA',
+        time:3,
+        realtime:1,
+        project:'4thsource'
+    },
+    {
+        descrption:'English',
+        time:1,
+        realtime:0,
+        project:'4thsource'
+    },
+    {
+        descrption:'Admin',
+        time:1,
+        realtime:1,
+        project:'4thsource'
+    },
+    {
+        descrption:'STRY0025452',
+        time:1,
+        realtime:1,
+        project:'Infor',
+        definition:'Retrieve the update set after clonation, review it, pass it to Israel.'
+    },
+    {
+        descrption:'STRY0019248',
+        time:1,
+        realtime:1,
+        project:'Dollar',
+        definition:'Update The story seems that no one look into my development task updates...'
+    },
+    {
+        descrption:'Story to story',
+        time:2,
+        realtime:1,
+        project:'Dollar',
+        definition:'Update The story seems that no one look into my development task updates...'
+    },
+    
+
+
+
+
+
+
+    {
+        descrption:'Scrum,Internal meetings',
+        time:2.5,
+        realtime:2.5,
+        project:'Handcloud'
+    },
+    {
+        descrption:'Eglobal',
+        time:.5,
+        realtime:.5,
+        project:'Handcloud'
+    },
+    {
+        descrption:'Admin',
+        time:.5,
+        realtime:.5,
+        project:'Handcloud'
+    },
+]
 
 
 
@@ -180,7 +337,13 @@ timesheet.wenesday =[
 
 
 
+//Pendientes
 
+*Story to Story
+-Watchlist normal break?
+-Cooments retrieve story
+*Internal?
+*
 
 
 

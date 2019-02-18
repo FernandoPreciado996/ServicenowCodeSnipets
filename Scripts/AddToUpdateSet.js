@@ -1,4 +1,10 @@
 //This script will add the given record to an existing update set
+
+
+
+var gr = new GlideRecord('u_catalog_table_field');
+      gr.get('44246362db4fd380f923ffd31d9619d5');
+      addToUpdateSet(gr)
 function addToUpdateSet(current) {
     //Check to make sure the table isn't synchronized already if you want to force it comment the validation. (Not recommended)
     var tbl = current.getTableName();
