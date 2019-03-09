@@ -31,3 +31,9 @@ cambiar el nombre deluser rest del laod del cleinte por algo mas descriptivo
 5.-Delete Attachment
 6.-Retrieve Attachment(Master Only)
 7.-Active Workflow
+
+
+
+//issue
+Client Attachmen->Master pass
+master Delete-> Client Attachment fail

@@ -2,8 +2,8 @@
 
 
 
-var gr = new GlideRecord('u_catalog_table_field');
-      gr.get('44246362db4fd380f923ffd31d9619d5');
+var gr = new GlideRecord('sys_user_group');
+      gr.get('2999f6bc1bb76b00c691535c2e4bcb94');
       addToUpdateSet(gr)
 function addToUpdateSet(current) {
     //Check to make sure the table isn't synchronized already if you want to force it comment the validation. (Not recommended)
